@@ -1,8 +1,9 @@
 const express = require("express");
 const cors = require("cors");
-const mongoose = require("mongoose");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
+const dashboardRoutes = require("./routes/Dashboard")
+const appointmentRoutes = require("./routes/AppointmentRoute");
 
 
 require("dotenv").config();
@@ -18,6 +19,10 @@ connectDB();
 
 // Routes
 app.use("/api", authRoutes);
+app.use('/api', dashboardRoutes);
+app.use('/api/', appointmentRoutes);
+  // Routes under /api
+
 
 // Start server
 const PORT = process.env.PORT || 5000;

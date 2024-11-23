@@ -1,56 +1,54 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const User = require("../models/user");
+const User = require("../models/User");
 const router = express.Router();
-
 
 router.post("/register", async (req, res) => {
   const { username, email, password } = req.body;
-  console.log("Request Body:", req.body); // Log incoming data for debugging
 
   try {
-    // Check if the email already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      console.error("Error: Email already in use");
-      return res.status(400).json({ error: "Email is already in use" });
-    }
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    // Encrypt the password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const newUser = new User({
+      username,
+      email,
+      password: hashedPassword,
+    });
 
-    // Save user to database
-    const user = new User({ username, email, password: hashedPassword });
-    await user.save();
-
-    console.log("User registered successfully:", user);
+    await newUser.save();
     res.status(201).json({ message: "User registered successfully" });
   } catch (err) {
-    console.error("Registration failed:", err.message); // Log server error
+    console.error("Registration error:", err.message);
     res.status(500).json({ error: "Registration failed" });
   }
 });
 
 
-// Login route
+
 router.post("/login", async (req, res) => {
-  console.log("Login route hit");
   const { email, password } = req.body;
-  console.log("Email:", email, "Password:", password);
+
   try {
     const user = await User.findOne({ email });
     if (!user) {
+      console.error("User not found");
       return res.status(404).json({ error: "User not found" });
     }
 
+    console.log("Stored hashed password:", user.password);
+
+    // Compare passwords
     const isMatch = await bcrypt.compare(password, user.password);
+    console.log("Password match result:", isMatch);
+
     if (!isMatch) {
+      console.error("Password mismatch for user:", user.email);
       return res.status(400).json({ error: "Invalid credentials" });
     }
 
-    // Generate JWT
+    // If passwords match, generate a token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "1d",
     });
@@ -63,9 +61,12 @@ router.post("/login", async (req, res) => {
       },
     });
   } catch (err) {
+    console.error("Login error:", err.message);
     res.status(500).json({ error: "Login failed" });
   }
 });
+
+
 
 
 module.exports = router;
