@@ -1,33 +1,29 @@
-const express = require('express');
-const Appointment = require('../models/Appointment');
+const express = require("express");
+const Appointment = require("../models/Appointment");
 
 const router = express.Router();
 
-// Create a new appointment
-router.post('/', async (req, res) => {
+// POST: Add new appointment
+router.post("/appointments", async (req, res) => {
+  console.log("Incoming Request:", req.body);
   try {
-    const appointment = new Appointment({
-      name: req.body.name,
-      email: req.body.email,
-      phone: req.body.phone,
-      symptom: req.body.symptom,
-      cycle: req.body.cycle,
-      appointmentDate: req.body.appointmentDate,
-      message: req.body.message,
-    });
+    const appointment = new Appointment(req.body);
     await appointment.save();
-    res.status(201).json(appointment);
+    console.log("Appointment Saved:", appointment);
+    res.status(201).json({ message: "Appointment booked successfully", appointment });
   } catch (error) {
+    console.error("Error in POST /appointments:", error.message);
     res.status(400).json({ error: error.message });
   }
 });
 
-// Get all appointments
-router.get('/', async (req, res) => {
+// GET: Retrieve all appointments
+router.get("/appointments", async (req, res) => {
   try {
     const appointments = await Appointment.find();
     res.status(200).json(appointments);
   } catch (error) {
+    console.error("Error in GET /appointments:", error.message);
     res.status(500).json({ error: error.message });
   }
 });
