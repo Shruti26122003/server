@@ -20,7 +20,6 @@ const UserSchema = new mongoose.Schema(
   { timestamps: true } // Adds createdAt and updatedAt fields
 );
 
-// Hash password before saving to database
 UserSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   const salt = await bcrypt.genSalt(10);
@@ -28,12 +27,10 @@ UserSchema.pre("save", async function (next) {
   next();
 });
 
-// Instance method to compare passwords
 UserSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-// Handle unique constraint errors
 UserSchema.post("save", function (error, doc, next) {
   if (error.name === "MongoServerError" && error.code === 11000) {
     next(new Error("Duplicate field value entered"));

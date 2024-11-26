@@ -17,7 +17,7 @@ router.post('/save-period', async (req, res) => {
   try {
     const period = new Period({
       userId,
-      lastPeriodDate: new Date(lastPeriodDate),  // Convert to Date object
+      lastPeriodDate: new Date(lastPeriodDate),  
       cycleLength,
     });
     await period.save();
@@ -27,7 +27,7 @@ router.post('/save-period', async (req, res) => {
   }
 });
 
-// Route to predict the next period
+
 router.post('/predict-next-period', async (req, res) => {
   const { userId } = req.body;
   try {

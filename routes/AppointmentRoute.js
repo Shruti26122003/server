@@ -3,8 +3,7 @@ const Appointment = require("../models/Appointment");
 
 const router = express.Router();
 
-// POST: Add new appointment
-router.post("/appointments", async (req, res) => {
+router.post("/appointments", async (req, res) => {   //post-add appointment
   console.log("Incoming Request:", req.body);
   try {
     const appointment = new Appointment(req.body);
@@ -17,8 +16,7 @@ router.post("/appointments", async (req, res) => {
   }
 });
 
-// GET: Retrieve all appointments
-router.get("/appointments", async (req, res) => {
+router.get("/appointments", async (req, res) => {   //get-retrieval
   try {
     const appointments = await Appointment.find();
     res.status(200).json(appointments);
