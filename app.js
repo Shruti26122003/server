@@ -10,18 +10,14 @@ require("dotenv").config();
 
 const app = express();
 
-// Middleware
 app.use(express.json());
 app.use(cors());
 
-// Connect to MongoDB
 connectDB();
 
-// Routes
 app.use("/api", authRoutes);
 app.use('/api', dashboardRoutes);
-app.use('/api', appointmentRoutes);  // Correct the route for appointments
+app.use('/api', appointmentRoutes);  
 app.use('/api', periodRoute);
-// Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
